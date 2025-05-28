@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# Shibumi Bank React Demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a demo banking app built with React to showcase feature flag toggling using Split by Harness. The app includes a dynamic chat widget that is remotely controlled using Harness's client-side SDK and configuration.
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+### 1. Clone the Repository
 
-### `npm start`
+```bash
+git clone https://github.com/markopt/shibumi.git
+cd shibumi-bank-demo
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Install Dependencies
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm install
+```
 
-### `npm test`
+### 3. Start the App
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm start
+```
 
-### `npm run build`
+The app will start on `http://localhost:3000`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Feature Flag Setup (Split.io)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This project uses Split.io to remotely toggle a chat widget via a feature flag named `chat_widget`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Steps:
 
-### `npm run eject`
+1. Log in to Split.io and create a workspace if needed.
+2. Create a new feature flag named `chatWidget`.
+3. Add two treatments:
+   - `on`
+   - `off` (set as default)
+4. Under the `on` treatment, add the following dynamic config:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```json
+{
+  "position": "right",
+  "placeholder": "Welcome to your personal banking agent! How can we assist you today?",
+  "color": "#CD5C5C"
+}
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. In the targeting rules, ensure your test user key (e.g., `"user_123"`) receives the `on` treatment.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## SDK Key Configuration
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+In `src/splitClient.js`, update the SDK configuration:
 
-## Learn More
+```js
+const factory = SplitFactory({
+  core: {
+    authorizationKey: 'YOUR_CLIENT_SDK_KEY', // Replace this
+    key: 'user_123' // Can be dynamically set per user
+  }
+});
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Only use a client-side SDK key. Do not expose server-side keys in the frontend.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Feature Behavior
 
-### Code Splitting
+- When `chatWidget` is set to `on`, a chat button appears in the bottom-right corner.
+- Button appearance and text are controlled via Split's dynamic configuration.
+- When the flag is `off`, the widget is not displayed.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Coming Soon
 
-### Analyzing the Bundle Size
+- Mobile responsiveness
+- Expanded chat functionality
+- Authentication and dashboard support
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## License
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT – use and modify freely for demos and internal projects.
